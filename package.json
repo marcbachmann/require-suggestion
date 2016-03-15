@@ -1,7 +1,7 @@
 {
   "name": "require-suggestion",
   "description": "Monkey patches require to show suggestions for requires that throw an error",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "scripts": {
     "test": "npm test"
