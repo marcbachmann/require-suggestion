@@ -28,11 +28,7 @@ function wrapRequiresWithSuggests () {
         }
       })
       .sort(function (a, b) { return a.distance - b.distance })
-      .filter(function (p) {
-        console.log(p.path, p.distance, p.thereshold)
-        if (!p.path) return false
-        if (p.thereshold < 0.8) return true
-      })
+      .filter(Boolean)
       .slice(0, 6)
       .map(function (p) {
         return path.join(baseDir, originalPaths[p.index])
