@@ -4,7 +4,7 @@
   "version": "1.0.1",
   "main": "index.js",
   "scripts": {
-    "test": "npm test"
+    "test": "node test.js"
   },
   "author": "Marc Bachmann <marc.brookman@gmail.com>",
   "license": "ISC",
