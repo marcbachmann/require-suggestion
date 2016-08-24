@@ -4,7 +4,7 @@
   "version": "1.0.1",
   "main": "index.js",
   "scripts": {
-    "test": "node test.js"
+    "test": "standard && node test.js"
   },
   "author": "Marc Bachmann <marc.brookman@gmail.com>",
   "license": "ISC",
@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/marcbachmann/require-suggestion/issues"
   },
-  "homepage": "https://github.com/marcbachmann/require-suggestion#readme"
+  "homepage": "https://github.com/marcbachmann/require-suggestion#readme",
+  "devDependencies": {
+    "standard": "^8.0.0"
+  }
 }
