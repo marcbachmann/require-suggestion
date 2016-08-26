@@ -9,8 +9,8 @@
   "author": "Marc Bachmann <marc.brookman@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "fast-levenshtein": "^2.0.0",
-    "glob": "^7.0.3"
+    "glob": "^7.0.3",
+    "leven": "^2.0.0"
   },
   "repository": {
     "type": "git",

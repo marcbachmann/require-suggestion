@@ -1,7 +1,7 @@
 var path = require('path')
 var glob = require('glob')
 var Module = require('module')
-var levenshtein = require('fast-levenshtein')
+var levenshtein = require('leven')
 
 module.exports = wrapRequiresWithSuggests
 
@@ -19,7 +19,7 @@ function wrapRequiresWithSuggests () {
     filename = removeExt(path.relative(baseDir, filename))
     return paths
       .map(function (p, index) {
-        var distance = levenshtein.get(p, filename)
+        var distance = levenshtein(p, filename)
         return {
           path: p,
           index: index,
