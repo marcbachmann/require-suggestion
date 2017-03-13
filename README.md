@@ -1,5 +1,7 @@
 # require-suggestion
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/marcbachmann/require-suggestion.svg)](https://greenkeeper.io/)
+
 Monkey patches require to show suggestions for requires that throw an error
 
 
