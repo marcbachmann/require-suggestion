@@ -1,25 +1,42 @@
-var path = require('path')
-var glob = require('glob')
-var Module = require('module')
-var levenshtein = require('leven')
+const path = require('path')
+const Module = require('module')
 
 module.exports = wrapRequiresWithSuggests
 
 function wrapRequiresWithSuggests () {
-  var baseDir = path.resolve.apply(null, Array.from(arguments).filter(Boolean))
-  var extensions = Object.keys(require.extensions).join('|').replace(/\./g, '\\.')
+  const baseDir = path.resolve.apply(null, Array.from(arguments).filter(Boolean))
+  const extensions = Object.keys(require.extensions).join('|').replace(/\./g, '\\.')
 
-  var globOpts = {cwd: baseDir, nodir: true, nosort: true, ignore: 'node_modules/**/*'}
-  var originalPaths = glob.sync(`**/*@(${extensions})`, globOpts)
-  var paths = originalPaths.map(function (p) {
-    return removeExt(p).replace(new RegExp('^' + baseDir), '')
-  })
+  let _originalPaths
+  let _relativePaths
+
+  function getPaths () {
+    if (_originalPaths) return {originalPaths: _originalPaths, relativePaths: _relativePaths}
+
+    const glob = require('glob')
+    _originalPaths = glob.sync(`**/*@(${extensions})`, {
+      cwd: baseDir,
+      nodir: true,
+      nosort: true,
+      ignore: 'node_modules/**/*'
+    })
+
+    _relativePaths = _originalPaths.map(function (p) {
+      return removeExt(p).replace(new RegExp(`^${baseDir}`), '')
+    })
+
+    return {originalPaths: _originalPaths, relativePaths: _relativePaths}
+  }
 
   function suggest (filename) {
+    const levenshtein = require('js-levenshtein')
+
+    const {originalPaths, relativePaths} = getPaths()
+
     filename = removeExt(path.relative(baseDir, filename))
-    return paths
+    return relativePaths
       .map(function (p, index) {
-        var distance = levenshtein(p, filename)
+        const distance = levenshtein(p, filename)
         return {
           path: p,
           index: index,
@@ -35,26 +52,26 @@ function wrapRequiresWithSuggests () {
       })
   }
 
-  var originalResolve = Module._resolveFilename
+  const originalResolve = Module._resolveFilename
   Module._resolveFilename = function wrappedResolveFilename (request, parent) {
     function toRelative (p) {
-      var dir = path.relative(parent.filename, p)
-      if (/^..\/[^\.]/.test(dir)) return dir.replace('../', './')
+      const dir = path.relative(parent.filename, p)
+      if (/^..\/[^.]/.test(dir)) return dir.replace('../', './')
       else return dir.replace('../', '')
     }
 
     try {
       return originalResolve.call(this, request, parent)
     } catch (err) {
-      if (/^[^\.]/.test(request)) throw err
+      if (/^[^.]/.test(request)) throw err
 
-      var resolved = path.relative(parent.filename, request)
-      var suggestions = suggest(resolved)
+      const resolved = path.relative(parent.filename, request)
+      const suggestions = suggest(resolved)
       if (!suggestions.length) throw err
 
-      var files = suggestions.map(toRelative)
-      var stack = err.stack.split('\n')
-      var firstLine = stack.shift()
+      const files = suggestions.map(toRelative)
+      const stack = err.stack.split('\n')
+      const firstLine = stack.shift()
       stack.unshift(
         firstLine,
         '\nProbably you wanted to require one of those:\n',

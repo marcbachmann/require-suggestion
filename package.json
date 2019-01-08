@@ -1,16 +1,20 @@
 {
   "name": "require-suggestion",
   "description": "Monkey patches require to show suggestions for requires that throw an error",
-  "version": "1.0.2",
+  "version": "0.0.0-placeholder",
   "main": "index.js",
+  "engines": {
+    "node": ">8"
+  },
   "scripts": {
-    "test": "standard && node test.js"
+    "test": "eslint . && node test.js",
+    "test:ci": "node test.js"
   },
   "author": "Marc Bachmann <marc.brookman@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "glob": "^7.0.3",
-    "leven": "^2.0.0"
+    "js-levenshtein": "^1.1.4"
   },
   "repository": {
     "type": "git",
@@ -19,8 +23,5 @@
   "bugs": {
     "url": "https://github.com/marcbachmann/require-suggestion/issues"
   },
-  "homepage": "https://github.com/marcbachmann/require-suggestion#readme",
-  "devDependencies": {
-    "standard": "^8.0.0"
-  }
+  "homepage": "https://github.com/marcbachmann/require-suggestion#readme"
 }

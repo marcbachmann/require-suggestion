@@ -1,4 +1,4 @@
-var assert = require('assert')
+const assert = require('assert')
 require('./index')(__dirname)
 
 assert.doesNotThrow(function () { require('./package') })
