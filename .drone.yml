@@ -1,36 +1,43 @@
+---
+kind: pipeline
+name: default
+
 clone:
-  git:
-    image: plugins/git
-    depth: 50
-    tags: true
+  depth: 50
 
-pipeline:
-  eslint:
-    group: install
-    image: marcbachmann/eslint:5.10.0
-    secrets: [gh_token]
+steps:
+- name: eslint
+  image: marcbachmann/eslint:5.10.0
+  environment:
+    GH_TOKEN:
+      from_secret: GH_TOKEN
 
-  install:
-    group: install
-    image: node:8-alpine
-    commands: ["npm install"]
+- name: install
+  image: node:8-alpine
+  commands: ["npm install"]
 
-  test-node-8:
-    group: test
-    image: node:8-alpine
-    commands: ["npm run test:ci -s"]
+- name: test-node-8
+  image: node:8-alpine
+  commands: ["npm run test:ci -s"]
 
-  test-node-10:
-    group: test
-    image: node:10-alpine
-    commands: ["npm run test:ci -s"]
+- name: test-node-10
+  image: node:10-alpine
+  commands: ["npm run test:ci -s"]
 
-  test-node-11:
-    group: test
-    image: node:11-alpine
-    commands: ["npm run test:ci -s"]
+- name: test-node-11
+  image: node:11-alpine
+  commands: ["npm run test:ci -s"]
 
-  publish:
-    group: build
-    image: marcbachmann/semantic-release:15.1.3
-    secrets: [gh_token, npm_token]
+- name: publish
+  image: livingdocs/semantic-release:v1.0.0
+  environment:
+    GH_TOKEN:
+      from_secret: GH_TOKEN
+    NPM_TOKEN:
+      from_secret: NPM_TOKEN
+
+---
+kind: signature
+hmac: 72e7724010df659f39d6f42cd1143807190e27f1134f2ba07ea86db9452e657f
+
+...

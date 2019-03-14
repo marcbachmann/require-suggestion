@@ -23,5 +23,8 @@
   "bugs": {
     "url": "https://github.com/marcbachmann/require-suggestion/issues"
   },
-  "homepage": "https://github.com/marcbachmann/require-suggestion#readme"
+  "homepage": "https://github.com/marcbachmann/require-suggestion#readme",
+  "release": {
+    "extends": "@livingdocs/semantic-release-presets/npm-github-verify"
+  }
 }
