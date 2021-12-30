@@ -7,29 +7,29 @@ clone:
 
 steps:
 - name: eslint
-  image: marcbachmann/eslint:5.10.0
+  image: marcbachmann/eslint:7.14.0
   environment:
     GH_TOKEN:
       from_secret: GH_TOKEN
 
 - name: install
-  image: node:8-alpine
+  image: node:14-alpine
   commands: ["npm install"]
 
-- name: test-node-8
-  image: node:8-alpine
+- name: test-node-14
+  image: node:14-alpine
   commands: ["npm run test:ci -s"]
 
-- name: test-node-10
-  image: node:10-alpine
+- name: test-node-16
+  image: node:16-alpine
   commands: ["npm run test:ci -s"]
 
-- name: test-node-11
-  image: node:11-alpine
+- name: test-node-17
+  image: node:17-alpine
   commands: ["npm run test:ci -s"]
 
 - name: publish
-  image: livingdocs/semantic-release:v1.0.0
+  image: livingdocs/semantic-release:v1.2.2
   environment:
     GH_TOKEN:
       from_secret: GH_TOKEN
@@ -38,6 +38,6 @@ steps:
 
 ---
 kind: signature
-hmac: 72e7724010df659f39d6f42cd1143807190e27f1134f2ba07ea86db9452e657f
+hmac: 51b7b6c58ea6ba047c20b42ea0d012b4431207211470076c285ab5ad085d45f1
 
 ...
