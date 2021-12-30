@@ -10,11 +10,11 @@ try {
     throw new Error('Stack does not begin with default error message')
   }
 
-  if (!/Probably you wanted to require one of those:/.test(err.stack)) {
+  if (!/Require suggestions:/.test(err.stack)) {
     throw new Error('Stack does not contain suggestion sentence')
   }
 
-  if (!/one of those:\n\n/.test(err.stack) && !/\.\/package\.json/.test(err.stack)) {
+  if (!/Require suggestions:\n- \.\/package.json/.test(err.message)) {
     throw new Error('Stack does not show package.json suggestion')
   }
 }

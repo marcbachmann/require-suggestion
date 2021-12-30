@@ -3,9 +3,10 @@ const Module = require('module')
 
 module.exports = wrapRequiresWithSuggests
 
-function wrapRequiresWithSuggests () {
-  const baseDir = path.resolve.apply(null, Array.from(arguments).filter(Boolean))
-  const extensions = Object.keys(require.extensions).join('|').replace(/\./g, '\\.')
+function wrapRequiresWithSuggests (...args) {
+  const baseDir = path.resolve.apply(null, args.filter(Boolean))
+  const baseDirRegex = new RegExp(`^${baseDir}`)
+  const extensions = Object.keys(require.extensions || ['.js']).join('|').replace(/\./g, '\\.')
 
   let _originalPaths
   let _relativePaths
@@ -13,47 +14,42 @@ function wrapRequiresWithSuggests () {
   function getPaths () {
     if (_originalPaths) return {originalPaths: _originalPaths, relativePaths: _relativePaths}
 
-    const glob = require('glob')
+    const glob = require('fast-glob')
     _originalPaths = glob.sync(`**/*@(${extensions})`, {
       cwd: baseDir,
-      nodir: true,
-      nosort: true,
+      onlyFiles: true,
       ignore: 'node_modules/**/*'
     })
 
     _relativePaths = _originalPaths.map(function (p) {
-      return removeExt(p).replace(new RegExp(`^${baseDir}`), '')
+      return removeExt(p).replace(baseDirRegex, '')
     })
 
     return {originalPaths: _originalPaths, relativePaths: _relativePaths}
   }
 
   function suggest (filename) {
-    const levenshtein = require('js-levenshtein')
+    const {distance: levelDistance} = require('fastest-levenshtein')
 
     const {originalPaths, relativePaths} = getPaths()
 
     filename = removeExt(path.relative(baseDir, filename))
     return relativePaths
       .map(function (p, index) {
-        const distance = levenshtein(p, filename)
         return {
-          path: p,
           index: index,
-          distance: distance,
-          thereshold: distance / p.length
+          distance: levelDistance(p, filename)
         }
       })
       .sort(function (a, b) { return a.distance - b.distance })
-      .filter(Boolean)
       .slice(0, 6)
       .map(function (p) {
-        return path.join(baseDir, originalPaths[p.index])
+        return originalPaths[p.index]
       })
   }
 
   const originalResolve = Module._resolveFilename
-  Module._resolveFilename = function wrappedResolveFilename (request, parent) {
+  Module._resolveFilename = function wrappedResolveFilename (request, parent, isMain, options) {
     function toRelative (p) {
       const dir = path.relative(parent.filename, p)
       if (/^..\/[^.]/.test(dir)) return dir.replace('../', './')
@@ -61,7 +57,7 @@ function wrapRequiresWithSuggests () {
     }
 
     try {
-      return originalResolve.call(this, request, parent)
+      return originalResolve.call(this, request, parent, isMain, options)
     } catch (err) {
       if (/^[^.]/.test(request)) throw err
 
@@ -69,17 +65,12 @@ function wrapRequiresWithSuggests () {
       const suggestions = suggest(resolved)
       if (!suggestions.length) throw err
 
-      const files = suggestions.map(toRelative)
-      const stack = err.stack.split('\n')
-      const firstLine = stack.shift()
-      stack.unshift(
-        firstLine,
-        '\nProbably you wanted to require one of those:\n',
-        `  ${files.join('\n  ')}\n`,
-        'You tried to require it in that file:\n',
-        `  ${parent.filename}\n`
+      const files = suggestions.map(toRelative).filter(Boolean)
+      err.message = err.message.replace(
+        '\n',
+        `\n\nRequire suggestions:\n` +
+        `- ${files.join('\n- ')}\n\n`
       )
-      err.stack = stack.join('\n')
       throw err
     }
   }

@@ -14,27 +14,26 @@ require('./pakage.json')
 throws that error instead of the default one
 
 ```bash
-Error: Cannot find module './pakage'
+Error: Cannot find module './pakage.json'
 
-Probably you wanted to require one of those:
+Require suggestions:
+- ./package.json
+- ./package-lock.json
+- ./index.js
+- ./register.js
 
-  ./package.json
-  ./register.js
-  ./test.js
-  ./index.js
-
-You tried to require it in that file:
-
-  /your/exection/script/path/index.js
-
-    at Function.Module._resolveFilename (module.js:337:15)
-    at Function.wrappedResolveFilename [as _resolveFilename] (/Users/marcbachmann/Development/marcbachmann/require-suggestion/index.js:40:30)
-    at Function.Module._load (module.js:287:25)
-    at Module.require (module.js:366:17)
-    at require (module.js:385:17)
-    at repl:1:1
-    at REPLServer.defaultEval (repl.js:248:27)
-    at bound (domain.js:280:14)
-    at REPLServer.runBound [as eval] (domain.js:293:12)
-    at REPLServer.<anonymous> (repl.js:412:12)
+Require stack:
+- /app/require-suggestion/test.js
+    at Function.Module._resolveFilename (node:internal/modules/cjs/loader:933:15)
+    at Function.wrappedResolveFilename [as _resolveFilename] (/app/require-suggestion/index.js:60:30)
+    at Function.Module._load (node:internal/modules/cjs/loader:778:27)
+    at Module.require (node:internal/modules/cjs/loader:1005:19)
+    at require (node:internal/modules/cjs/helpers:102:18)
+    at Object.<anonymous> (/app/require-suggestion/test.js:7:3)
+    at Module._compile (node:internal/modules/cjs/loader:1101:14)
+    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1153:10)
+    at Module.load (node:internal/modules/cjs/loader:981:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:822:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:81:12)
+    at node:internal/main/run_main_module:17:47
 ```
